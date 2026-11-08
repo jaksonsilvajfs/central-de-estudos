@@ -1,0 +1,1791 @@
+<!doctype html><html lang="pt-BR"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Central de Estudos</title>
+<meta name="description" content="Central de Estudos — Instituições Judiciais e Ética">
+<meta name="theme-color" content="#1B2B5A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Estudos">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Libre+Caslon+Text:wght@400;700&display=swap">
+<style>
+/* Layout: pauta da disciplina (temas e trabalhos) na lateral, mesa de estudo à direita. */
+:root {
+  --bg: #ECEEF2;
+  --surface: #FFFFFF;
+  --surface-2: #F4F5F8;
+  --ink: #16213A;
+  --muted: #58627A;
+  --line: #D3D8E2;
+  --primary: #1B2B5A;
+  --on-primary: #FFFFFF;
+  --accent: #8A5E0B;
+  --accent-soft: #F3E7CC;
+  --good: #1D7448;
+  --good-soft: #DDF0E5;
+  --warn: #A85A07;
+  --warn-soft: #FBE8D0;
+  --bad: #B3261E;
+  --bad-soft: #F8DCDA;
+  --focus: #2E5BFF;
+  --f-display: "Libre Caslon Text", Georgia, "Times New Roman", serif;
+  --f-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1322; --surface: #161D32; --surface-2: #1C2540; --ink: #E7EAF3; --muted: #9AA3BA; --line: #2A3453;
+    --primary: #A5B8FF; --on-primary: #0E1322; --accent: #E3B65A; --accent-soft: #3A2F14;
+    --good: #5CCB92; --good-soft: #12301F; --warn: #F0A458; --warn-soft: #3A2410; --bad: #FF8F86; --bad-soft: #3F1A18;
+    --focus: #8FA8FF; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1322; --surface: #161D32; --surface-2: #1C2540; --ink: #E7EAF3; --muted: #9AA3BA; --line: #2A3453;
+  --primary: #A5B8FF; --on-primary: #0E1322; --accent: #E3B65A; --accent-soft: #3A2F14;
+  --good: #5CCB92; --good-soft: #12301F; --warn: #F0A458; --warn-soft: #3A2410; --bad: #FF8F86; --bad-soft: #3F1A18;
+  --focus: #8FA8FF; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--f-body); font-size: 15px; line-height: 1.55;
+  padding-block: 20px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1180px; margin: 0 auto; }
+button, input, textarea, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* Cabeçalho */
+.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; padding-bottom: 14px; border-bottom: 2px solid var(--accent); margin-bottom: 20px; }
+.kicker { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin: 0 0 4px; }
+h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(22px, 4.6vw, 32px); line-height: 1.15; margin: 0; text-wrap: balance; }
+.status { font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--good); flex: none; }
+.status.warn::before { background: var(--warn); }
+.status.bad::before { background: var(--bad); }
+.status.bad { color: var(--bad); }
+
+/* Estrutura */
+.layout { display: grid; grid-template-columns: minmax(250px, 310px) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 860px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+.rail { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; min-width: 0; }
+.rail h2, .label { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 500; margin: 0 0 10px; }
+.home-link { display: block; width: 100%; text-align: left; background: none; border: 0; padding: 0; cursor: pointer; font-weight: 600; color: var(--primary); }
+.home-link[aria-current="true"] { text-decoration: underline; text-underline-offset: 4px; }
+.rev-count { display: block; margin-top: 4px; color: var(--muted); font-size: 12.5px; }
+.rev-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }
+.rev-row:first-child { border-top: 0; padding-top: 0; }
+.rev-row b { font-weight: 600; overflow-wrap: anywhere; }
+.rev-row .q-meta { margin-top: 4px; }
+@media (max-width: 520px) { .rev-row { grid-template-columns: minmax(0, 1fr); } }
+details.fold { border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; background: var(--surface); }
+details.fold summary { cursor: pointer; font-weight: 600; }
+details.fold[open] summary { margin-bottom: 12px; }
+.mat-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: end; }
+.mat-form .wide { grid-column: 1 / -1; }
+@media (max-width: 620px) { .mat-form { grid-template-columns: minmax(0, 1fr); } }
+.mat-link { font-weight: 600; color: var(--primary); text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }
+.mat-link:hover { text-decoration-thickness: 2px; }
+.host { font-family: var(--f-mono); font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+a.btn { text-decoration: none; display: inline-block; }
+.chat { border-top: 1px solid var(--line); padding-top: 18px; margin-top: 6px; }
+.chat-log { display: grid; gap: 12px; }
+.msg { display: grid; gap: 4px; min-width: 0; max-width: 78ch; }
+.msg-who { font-family: var(--f-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.msg-user { background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+.msg-user .q-text { margin: 0; }
+.msg-bot { border-left: 3px solid var(--accent); padding-left: 12px; }
+.monitor .chat-log { max-height: 460px; overflow-y: auto; padding-right: 4px; }
+.fab { position: fixed; right: calc(16px + env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 20; border-radius: 99px; padding: 10px 18px; box-shadow: 0 6px 18px rgba(10, 16, 32, .22); }
+.quote { border-left: 3px solid var(--accent); padding: 2px 0 2px 12px; white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; max-width: 70ch; }
+
+.items { list-style: none; margin: 0 0 12px; padding: 0; display: flex; flex-direction: column; gap: 4px; max-height: 340px; overflow-y: auto; }
+.item { width: 100%; text-align: left; background: var(--surface-2); border: 1px solid transparent; border-radius: 6px; padding: 9px 10px; cursor: pointer; display: grid; gap: 2px; }
+.item:hover { border-color: var(--line); }
+.item[aria-current="true"] { border-color: var(--primary); background: var(--surface); box-shadow: inset 3px 0 0 var(--primary); }
+.item b { font-weight: 600; font-size: 14px; overflow-wrap: anywhere; }
+.item small { color: var(--muted); font-size: 12.5px; }
+.rail-empty { color: var(--muted); font-size: 13.5px; margin: 0 0 12px; }
+
+/* Controles */
+label.field { display: grid; gap: 6px; font-size: 13px; color: var(--muted); font-weight: 500; }
+input[type="text"], input[type="date"], textarea, select {
+  width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 9px 10px; color: var(--ink);
+}
+textarea { resize: vertical; min-height: 84px; line-height: 1.5; }
+.btn { background: var(--primary); color: var(--on-primary); border: 1px solid var(--primary); border-radius: 6px; padding: 8px 14px; font-weight: 600; cursor: pointer; }
+.btn:hover { filter: brightness(1.08); }
+.btn:disabled { opacity: .5; cursor: not-allowed; filter: none; }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn.ghost:hover { border-color: var(--muted); filter: none; }
+.btn.danger { color: var(--bad); }
+.btn.small { padding: 5px 10px; font-size: 13px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.row.between { justify-content: space-between; }
+.stack { display: grid; gap: 12px; }
+
+/* Mesa */
+.mesa { min-width: 0; display: grid; gap: 14px; }
+.mesa-head { display: grid; gap: 10px; }
+.title-input { font-family: var(--f-display); font-size: clamp(20px, 3.6vw, 26px); font-weight: 700; border: 0; border-bottom: 1px dashed var(--line); border-radius: 0; padding: 4px 0; background: transparent; }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+.tab { background: none; border: 0; border-bottom: 3px solid transparent; padding: 9px 12px; font-weight: 600; color: var(--muted); cursor: pointer; white-space: nowrap; }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.check { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
+.check input { width: 18px; height: 18px; accent-color: var(--primary); }
+
+.pill { display: inline-block; font-family: var(--f-mono); font-size: 11.5px; padding: 2px 8px; border-radius: 99px; background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); white-space: nowrap; }
+.pill.good { background: var(--good-soft); color: var(--good); border-color: transparent; }
+.pill.warn { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+.pill.bad { background: var(--bad-soft); color: var(--bad); border-color: transparent; }
+.pill.accent { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+
+.empty { border: 1px dashed var(--line); border-radius: 8px; padding: 22px; display: grid; gap: 10px; justify-items: start; background: var(--surface); }
+.empty h3 { margin: 0; font-family: var(--f-display); font-size: 19px; }
+.empty p { margin: 0; color: var(--muted); max-width: 62ch; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { background: var(--surface-2); border: 1px solid var(--line); border-radius: 99px; padding: 6px 12px; cursor: pointer; font-size: 13.5px; }
+.chip:hover { border-color: var(--primary); }
+.chip[aria-current="true"] { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+.chip-n { font-family: var(--f-mono); font-size: 11.5px; opacity: .75; margin-left: 4px; }
+.tagchip { display: inline-flex; align-items: center; border: 1px solid transparent; background: var(--accent-soft); color: var(--accent); border-radius: 99px; overflow: hidden; }
+.tag-go, .tag-x { background: none; border: 0; cursor: pointer; color: inherit; font-size: 13px; padding: 4px 8px; }
+.tag-go { padding-right: 4px; font-weight: 500; }
+.tag-x { padding-left: 4px; font-size: 16px; line-height: 1; }
+.tag-go:hover, .tag-x:hover { text-decoration: underline; }
+
+.note { border-radius: 6px; padding: 10px 12px; font-size: 13.5px; background: var(--warn-soft); color: var(--warn); }
+.note.bad { background: var(--bad-soft); color: var(--bad); }
+
+/* Texto gerado */
+.prose { max-width: 70ch; overflow-wrap: anywhere; }
+.prose h3 { font-family: var(--f-display); font-size: 18px; margin: 20px 0 6px; padding-top: 12px; border-top: 1px solid var(--line); text-wrap: balance; }
+.prose h3:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+.prose h4 { font-size: 15px; margin: 14px 0 4px; }
+.prose p { margin: 0 0 10px; }
+.prose ul, .prose ol { margin: 0 0 10px; padding-left: 22px; }
+.prose li { margin-bottom: 4px; }
+.prose code { font-family: var(--f-mono); font-size: 13px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+.muted { color: var(--muted); }
+
+/* Painel */
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin: 0; }
+.facts div { border-left: 3px solid var(--accent); padding-left: 10px; }
+.facts dt { font-family: var(--f-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.facts dd { margin: 2px 0 0; font-family: var(--f-display); font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* Perguntas */
+.q { border: 1px solid var(--line); border-radius: 8px; padding: 14px; display: grid; gap: 10px; background: var(--surface); }
+.q-text { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
+.q-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.fb { background: var(--surface-2); border-radius: 6px; padding: 10px 12px; display: grid; gap: 6px; }
+.fb p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+@media (prefers-reduced-motion: no-preference) { .item, .btn, .chip { transition: border-color .15s, filter .15s; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <p class="kicker">1º período · Direito</p>
+      <h1>Disciplina: Instituições Judiciais e Ética</h1>
+    </div>
+    <div id="status" class="status" role="status" aria-live="polite">Carregando…</div>
+  </header>
+
+  <div class="layout">
+    <aside class="rail">
+      <section class="panel">
+        <button id="home-link" class="home-link" type="button">Mesa de estudo</button>
+      </section>
+
+      <section class="panel">
+        <button id="rev-link" class="home-link" type="button">Revisões</button>
+        <small id="rev-count" class="rev-count"></small>
+      </section>
+
+      <section class="panel">
+        <button id="mat-link" class="home-link" type="button">Materiais de Estudo</button>
+        <small id="mat-count" class="rev-count"></small>
+        <button id="mat-add" class="btn ghost small" type="button" style="margin-top:10px">Adicionar link</button>
+      </section>
+
+      <section class="panel">
+        <h2>Tags</h2>
+        <div id="lista-tags" class="chips"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Pauta da disciplina</h2>
+        <ul id="lista-temas" class="items"></ul>
+        <form id="form-temas" class="stack">
+          <label class="field" for="novos-temas">Temas vistos em aula
+            <textarea id="novos-temas" rows="3" placeholder="Um tema por linha"></textarea>
+          </label>
+          <button class="btn" type="submit">Adicionar à pauta</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>Trabalhos</h2>
+        <ul id="lista-trabalhos" class="items"></ul>
+        <button id="novo-trabalho" class="btn ghost" type="button">Novo trabalho</button>
+      </section>
+    </aside>
+
+    <main id="mesa" class="mesa"></main>
+  </div>
+  <button id="fab-monitor" class="btn fab" type="button">Falar com o monitor</button>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- utilidades ---------- */
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+
+  function h(tag, props) {
+    var e = document.createElement(tag);
+    if (props) {
+      Object.keys(props).forEach(function (k) {
+        var v = props[k];
+        if (v == null || v === false) return;
+        if (k === "class") e.className = v;
+        else if (k === "text") e.textContent = v;
+        else if (k.indexOf("on") === 0) e.addEventListener(k.slice(2), v);
+        else if (k === "value" || k === "checked" || k === "disabled" || k === "hidden") e[k] = v;
+        else e.setAttribute(k, v === true ? "" : v);
+      });
+    }
+    for (var i = 2; i < arguments.length; i++) {
+      var kids = [].concat(arguments[i]);
+      kids.forEach(function (c) {
+        if (c == null || c === false) return;
+        e.append(c.nodeType ? c : document.createTextNode(String(c)));
+      });
+    }
+    return e;
+  }
+
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+  function inline(text, parent) {
+    text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).forEach(function (p) {
+      if (!p) return;
+      if (p.length > 4 && p.slice(0, 2) === "**" && p.slice(-2) === "**") parent.append(h("strong", { text: p.slice(2, -2) }));
+      else if (p.length > 2 && p[0] === "`" && p.slice(-1) === "`") parent.append(h("code", { text: p.slice(1, -1) }));
+      else parent.append(document.createTextNode(p));
+    });
+  }
+
+  function renderMd(src, root) {
+    root.textContent = "";
+    var list = null, para = [];
+    function flushP() {
+      if (para.length) { var p = h("p"); inline(para.join(" "), p); root.append(p); para = []; }
+    }
+    String(src).replace(/\r/g, "").split("\n").forEach(function (raw) {
+      var line = raw.trimEnd(), m;
+      if (!line.trim()) { flushP(); list = null; return; }
+      if ((m = line.match(/^(#{1,4})\s+(.*)$/))) {
+        flushP(); list = null;
+        var hd = h("h" + Math.min(m[1].length + 1, 4)); inline(m[2], hd); root.append(hd); return;
+      }
+      if ((m = line.match(/^\s*[-*]\s+(.*)$/))) {
+        flushP();
+        if (!list || list.tagName !== "UL") { list = h("ul"); root.append(list); }
+        var li = h("li"); inline(m[1], li); list.append(li); return;
+      }
+      if ((m = line.match(/^\s*\d+[.)]\s+(.*)$/))) {
+        flushP();
+        if (!list || list.tagName !== "OL") { list = h("ol"); root.append(list); }
+        var li2 = h("li"); inline(m[1], li2); list.append(li2); return;
+      }
+      list = null; para.push(line.trim());
+    });
+    flushP();
+  }
+
+  function daysLeft(str) {
+    if (!str) return null;
+    var p = str.split("-").map(Number);
+    if (p.length !== 3 || p.some(isNaN)) return null;
+    var t = new Date(p[0], p[1] - 1, p[2]);
+    var n = new Date(); n.setHours(0, 0, 0, 0);
+    return Math.round((t - n) / 864e5);
+  }
+  function prazoTexto(d) {
+    if (d == null) return "sem prazo";
+    if (d < -1) return "atrasado há " + (-d) + " dias";
+    if (d === -1) return "atrasado há 1 dia";
+    if (d === 0) return "vence hoje";
+    if (d === 1) return "vence amanhã";
+    return "faltam " + d + " dias";
+  }
+  function dataBR(str) {
+    if (!str) return "";
+    var p = str.split("-"); return p.length === 3 ? p[2] + "/" + p[1] + "/" + p[0] : str;
+  }
+  function fmtNota(n) { return n.toLocaleString("pt-BR", { maximumFractionDigits: 1 }); }
+
+  /* ---------- estado ---------- */
+  var state = { temas: [], trabalhos: [], materiais: [], matEdit: null, matFiltro: "", sel: null, tab: "guia", mode: "init", loaded: false, synced: false, saveError: false, slow: false };
+  var dbNS = null, sampleFn = null;
+  var jobs = {}, jobErr = {}, live = {}, pending = {}, chains = {};
+  var LS = "monitor-ije-v1";
+  state.geral = { id: "geral", chat: [] };
+
+  function getTema(id) { return state.temas.filter(function (t) { return t.id === id; })[0]; }
+  function getTrab(id) { return state.trabalhos.filter(function (t) { return t.id === id; })[0]; }
+
+  function localLoad() {
+    try {
+      var r = localStorage.getItem(LS);
+      if (r) { var d = JSON.parse(r); state.temas = d.temas || []; state.trabalhos = d.trabalhos || []; state.materiais = d.materiais || []; if (d.geral && Array.isArray(d.geral.chat)) state.geral.chat = d.geral.chat; }
+    } catch (e) {}
+  }
+  function localSave() {
+    try { localStorage.setItem(LS, JSON.stringify({ temas: state.temas, trabalhos: state.trabalhos, materiais: state.materiais, geral: state.geral })); } catch (e) {}
+  }
+
+  function persist(col, item) {
+    if (!dbNS) { localSave(); return; }
+    var key = col + "/" + item.id;
+    var body = JSON.parse(JSON.stringify(item));
+    delete body.id;
+    chains[key] = (chains[key] || Promise.resolve())
+      .then(function () { return dbNS.collection(col).doc(item.id).set(body); })
+      .catch(function () { state.saveError = true; renderStatus(); });
+  }
+  function removeItem(col, id) {
+    var arr = col === "temas" ? state.temas : col === "materiais" ? state.materiais : state.trabalhos;
+    var i = arr.map(function (x) { return x.id; }).indexOf(id);
+    if (i >= 0) arr.splice(i, 1);
+    if (!dbNS) { localSave(); return; }
+    var key = col + "/" + id;
+    chains[key] = (chains[key] || Promise.resolve())
+      .then(function () { return dbNS.collection(col).doc(id).delete(); })
+      .catch(function () { state.saveError = true; renderStatus(); });
+  }
+
+  function debounced(key, fn, ms) {
+    clearTimeout(pending[key] && pending[key].t);
+    pending[key] = { fn: fn, t: setTimeout(function () { var p = pending[key]; delete pending[key]; p.fn(); }, ms || 600) };
+  }
+  function flushAll() {
+    Object.keys(pending).forEach(function (k) {
+      var p = pending[k]; clearTimeout(p.t); delete pending[k]; p.fn();
+    });
+  }
+
+  /* ---------- status ---------- */
+  function renderStatus() {
+    var s = $("#status"), txt, cls = "status";
+    if (state.saveError) { txt = "Não foi possível salvar. A página pode estar em modo somente leitura."; cls += " bad"; }
+    else if (state.mode === "init") { txt = "Carregando…"; cls += " warn"; }
+    else if (state.mode === "db") {
+      if (!state.synced) { txt = state.slow ? "Sem resposta do armazenamento. Os dados podem estar desatualizados." : "Carregando seus temas…"; cls += " warn"; }
+      else txt = "Tudo salvo nesta página";
+    } else { txt = "Salvo só neste navegador"; cls += " warn"; }
+    s.className = cls; s.textContent = txt;
+  }
+
+  /* ---------- erros do Claude ---------- */
+  function copyFor(code) {
+    var m = {
+      not_granted: "O acesso ao Claude não foi liberado para esta página.",
+      sampling_disabled: "O Claude não está disponível para esta conta.",
+      rate_limited: "Muitas solicitações seguidas. Aguarde um pouco e tente de novo.",
+      session_expired: "Sua sessão expirou. Entre novamente e tente de novo.",
+      refused: "O Claude não respondeu a este pedido. Reescreva o tema ou o enunciado e tente de novo.",
+      empty_completion: "Veio uma resposta vazia. Tente de novo com mais detalhes.",
+      invalid_json: "A resposta veio fora do formato esperado. Tente gerar de novo.",
+      prompt_too_large: "O texto é grande demais. Reduza as anotações e tente de novo."
+    };
+    return m[code] || "A conexão falhou no meio do caminho. Tente de novo.";
+  }
+
+  var NO_CLAUDE = "Gerar guias, perguntas e orientações usa o Claude e fica disponível quando esta página é aberta dentro do Claude.";
+
+  /* ---------- prompts ---------- */
+  function promptGuia(t) {
+    return [
+      "Você atua como monitor de uma universidade e ajuda um estudante do 1º período de Direito na disciplina Instituições Judiciais e Ética. Explique o tema abaixo em português do Brasil, em linguagem clara, para quem está começando o curso.",
+      "",
+      "Tema: " + t.titulo,
+      "Anotações do estudante sobre o que o professor abordou: " + (t.notas && t.notas.trim() ? t.notas.trim().slice(0, 6000) : "nenhuma"),
+      "",
+      "Monte o guia em Markdown simples (use apenas ## para títulos, - para listas e **negrito**), com estas seções, nesta ordem:",
+      "## Ideia central (3 a 5 linhas)",
+      "## Conceitos que você precisa dominar (definições curtas)",
+      "## Base normativa e doutrinária (cite dispositivos da Constituição, leis e códigos só quando tiver certeza. Quando não tiver, diga que o estudante deve conferir o texto atualizado. Não invente números de artigos, julgados nem autores.)",
+      "## Como isso aparece na prática (um exemplo curto)",
+      "## Confusões comuns",
+      "## Roteiro de estudo (passos em ordem, com tempo estimado)",
+      "## Teste rápido (3 perguntas para o estudante tentar responder sozinho, sem gabarito)",
+      "Termine com uma linha lembrando de confrontar o guia com o material e a bibliografia indicados pelo professor. Não use tabelas. Seja objetivo."
+    ].join("\n");
+  }
+
+  function promptPerguntas(t) {
+    var ja = (t.perguntas || []).map(function (q) { return "- " + q.pergunta.split("\n")[0]; }).join("\n");
+    return [
+      "Você atua como monitor de uma universidade e prepara perguntas de estudo para um estudante do 1º período de Direito, na disciplina Instituições Judiciais e Ética.",
+      "Tema: " + t.titulo,
+      "Anotações do estudante sobre o que o professor abordou: " + (t.notas && t.notas.trim() ? t.notas.trim().slice(0, 4000) : "nenhuma"),
+      "",
+      "Crie 5 perguntas: 3 objetivas, com 4 alternativas (A a D) escritas dentro do texto da pergunta, e 2 discursivas curtas. Nível de 1º período, sem pegadinhas excessivas. Não invente números de artigos, julgados nem autores.",
+      ja ? "Não repita estas perguntas já feitas:\n" + ja : "",
+      "",
+      'Responda somente com um array JSON de objetos no formato {"tipo":"objetiva" ou "discursiva","pergunta":"texto","gabarito":"texto"}. Nas objetivas, o gabarito traz a letra correta e a justificativa. Nas discursivas, traz os pontos essenciais esperados.'
+    ].join("\n");
+  }
+
+  function promptCorrecao(t, q) {
+    return [
+      "Você atua como monitor de uma universidade e corrige a resposta de um estudante do 1º período de Direito. Seja justo, claro e encorajador, sem elogios vazios.",
+      "Tema: " + t.titulo,
+      "Tipo da pergunta: " + q.tipo,
+      "Pergunta:\n" + q.pergunta,
+      "Gabarito de referência:\n" + q.gabarito,
+      "Resposta do estudante:\n" + (q.resposta || "").slice(0, 4000),
+      "",
+      "Nas objetivas, a nota é 10 se a alternativa estiver certa e 0 se estiver errada. Nas discursivas, avalie de 0 a 10 pelos pontos essenciais cobertos.",
+      'Responda somente com JSON no formato {"nota": número de 0 a 10, "feedback": "o que está certo, o que faltou e como melhorar, em até 6 linhas"}.'
+    ].join("\n");
+  }
+
+  function promptTrabalho(w) {
+    var d = daysLeft(w.prazo);
+    var hoje = new Date().toLocaleDateString("pt-BR");
+    return [
+      "Você atua como monitor de uma universidade e orienta um estudante do 1º período de Direito em um trabalho da disciplina Instituições Judiciais e Ética. Oriente o estudante a fazer o trabalho por conta própria. Não escreva o trabalho nem trechos prontos para copiar.",
+      "",
+      "Título do trabalho: " + (w.titulo || "(sem título)"),
+      "Orientação do professor, como o estudante registrou:\n" + (w.enunciado && w.enunciado.trim() ? w.enunciado.trim().slice(0, 6000) : "(não informada)"),
+      "Hoje: " + hoje + ". Prazo de entrega: " + (w.prazo ? dataBR(w.prazo) + " (" + prazoTexto(d) + ")" : "não informado") + ".",
+      "",
+      "Responda em português do Brasil, em Markdown simples (## para títulos, - para listas, **negrito**), com estas seções:",
+      "## O que o professor está pedindo (traduza o enunciado em tarefas concretas e aponte o que ficou ambíguo para perguntar ao professor)",
+      "## Estrutura sugerida (seções e o que cada uma deve responder)",
+      "## Cronograma até a entrega (etapas com datas ou dias, de trás para frente a partir do prazo; se não houver prazo, proponha etapas por ordem)",
+      "## Onde pesquisar (tipos de fonte adequados a Direito, como legislação, doutrina e jurisprudência, sem inventar títulos, autores ou julgados)",
+      "## Cuidados de forma (normas ABNT básicas para citação e referências)",
+      "## Ética acadêmica (autoria, citação correta, plágio e a conferência das regras do professor sobre uso de ferramentas de IA)",
+      "## Lista de conferência antes de entregar",
+      "Seja objetivo."
+    ].join("\n");
+  }
+
+  /* ---------- tarefas com o Claude ---------- */
+  function paintLive(key) {
+    var n = live[key];
+    if (n && n.isConnected && jobs[key]) {
+      if (jobs[key].text) renderMd(jobs[key].text, n);
+    }
+  }
+  function stopJob(key) { if (jobs[key]) jobs[key].ctl.abort(); }
+
+  function finishUI() { renderRail(); renderMain(true); }
+
+  function startStream(key, prompt, onDone) {
+    if (jobs[key] || !sampleFn) return;
+    var ctl = new AbortController();
+    jobs[key] = { ctl: ctl, text: "" };
+    delete jobErr[key];
+    renderMain(true);
+    sampleFn(prompt, {
+      signal: ctl.signal, cache: false,
+      onText: function (u) { if (jobs[key]) { jobs[key].text = u.text; paintLive(key); } }
+    }).then(function (r) {
+      delete jobs[key];
+      onDone(r.text, !!r.truncated);
+    }).catch(function (e) {
+      var partial = e && e.text;
+      delete jobs[key];
+      if (e && e.code === "cancelled") { if (partial) onDone(partial, true); }
+      else { jobErr[key] = copyFor(e && e.code); if (partial) onDone(partial, true); }
+    }).then(finishUI);
+  }
+
+  function gerarGuia(id) {
+    var t = getTema(id); if (!t) return;
+    startStream("guia:" + id, promptGuia(t), function (text, cut) {
+      var x = getTema(id); if (!x) return;
+      x.guia = text; x.guiaCortado = cut; x.guiaEm = Date.now();
+      persist("temas", x);
+    });
+  }
+  function promptResumo(t) {
+    var erradas = (t.perguntas || []).filter(function (q) { return q.nota != null && q.nota < 7; }).slice(0, 5)
+      .map(function (q) { return "- " + q.pergunta.split("\n")[0]; }).join("\n");
+    return [
+      "Você atua como monitor de uma universidade e prepara um resumo de revisão para um estudante do 1º período de Direito, na disciplina Instituições Judiciais e Ética. O estudante vai reler o resumo em poucos minutos, antes de uma prova ou de uma aula.",
+      "",
+      "Tema: " + t.titulo,
+      "Guia de estudo que o estudante já tem:\n" + (t.guia ? t.guia.slice(0, 8000) : "(nenhum)"),
+      "Anotações de aula do estudante:\n" + (t.notas && t.notas.trim() ? t.notas.trim().slice(0, 4000) : "(nenhuma)"),
+      erradas ? "Perguntas em que o estudante foi mal. Reforce os pontos ligados a elas:\n" + erradas : "",
+      "",
+      "Escreva em português do Brasil, em Markdown simples (## para títulos, - para listas, **negrito**), com estas seções:",
+      "## Em uma frase",
+      "## Os pontos que não podem faltar (no máximo 6 itens)",
+      "## Termos e dispositivos para memorizar (cite artigos e leis só quando tiver certeza. Não invente números de artigos, julgados nem autores.)",
+      "## Erros comuns",
+      "## Duas perguntas-relâmpago (sem gabarito)",
+      "Fique fiel ao guia e às anotações, sem contradizer o que o professor disse. Seja breve."
+    ].join("\n");
+  }
+  function gerarResumo(id) {
+    var t = getTema(id); if (!t) return;
+    startStream("resumo:" + id, promptResumo(t), function (text, cut) {
+      var x = getTema(id); if (!x) return;
+      x.resumo = text; x.resumoCortado = cut; x.resumoEm = Date.now();
+      persist("temas", x);
+    });
+  }
+
+  function promptChat(t) {
+    return [
+      "Você é um monitor de universidade e está estudando com um estudante do 1º período de Direito, na disciplina Instituições Judiciais e Ética. Responda em português do Brasil, de forma clara e didática, em respostas curtas ou médias, em Markdown simples (- para listas, **negrito**).",
+      "Converse como quem estuda junto: explique, dê exemplos e, quando fizer sentido, termine com uma pergunta para checar se o estudante entendeu.",
+      "Não invente números de artigos, julgados, resoluções nem autores. Se não tiver certeza, diga isso e peça ao estudante que confira no texto atualizado e no material do professor.",
+      "Se o estudante pedir que você faça um trabalho por ele, oriente o caminho sem entregar texto pronto. Se a pergunta fugir do tema, responda em poucas linhas e traga a conversa de volta ao tema.",
+      "",
+      "Tema em estudo: " + t.titulo,
+      "Guia de estudo do estudante:\n" + (t.guia ? t.guia.slice(0, 6000) : "(ainda não gerado)"),
+      "Anotações de aula do estudante:\n" + (t.notas && t.notas.trim() ? t.notas.trim().slice(0, 3000) : "(nenhuma)")
+    ].join("\n");
+  }
+
+  function enviarChat(id, texto) {
+    var key = "chat:" + id, t = getTema(id);
+    texto = (texto || "").trim();
+    if (!t || jobs[key] || !sampleFn || !texto) return;
+    t.chat = (t.chat || []).concat({ role: "user", content: texto.slice(0, 4000) });
+    chatDraft[id] = "";
+    persist("temas", t);
+
+    var turns = t.chat.slice(-20);
+    while (turns.length && turns[0].role !== "user") turns.shift();
+    var input = [{ role: "user", content: promptChat(t) }].concat(turns);
+
+    var ctl = new AbortController();
+    jobs[key] = { ctl: ctl, text: "" }; delete jobErr[key];
+    renderMain(true);
+
+    function devolver() {
+      var x = getTema(id);
+      if (x && x.chat && x.chat.length && x.chat[x.chat.length - 1].role === "user") {
+        chatDraft[id] = x.chat.pop().content; persist("temas", x);
+      }
+    }
+    sampleFn(input, {
+      signal: ctl.signal, cache: false,
+      onText: function (u) { if (jobs[key]) { jobs[key].text = u.text; paintLive(key); } }
+    }).then(function (r) {
+      delete jobs[key];
+      var x = getTema(id);
+      if (x) { x.chat = (x.chat || []).concat({ role: "assistant", content: r.text }).slice(-40); persist("temas", x); }
+    }).catch(function (e) {
+      var partial = e && e.text;
+      delete jobs[key];
+      var x = getTema(id);
+      if (e && e.code === "cancelled") {
+        if (x && partial) { x.chat = (x.chat || []).concat({ role: "assistant", content: partial }); persist("temas", x); }
+        else devolver();
+      } else {
+        jobErr[key] = copyFor(e && e.code);
+        if (x && partial) { x.chat = (x.chat || []).concat({ role: "assistant", content: partial }); persist("temas", x); }
+        else devolver();
+      }
+    }).then(finishUI);
+  }
+
+  /* ---------- monitor sempre disponível ---------- */
+  var monitorLog = null, monIO = null;
+
+  function chatCtx() {
+    var s = state.sel;
+    if (s && (s.kind === "tema" || s.kind === "rev") && getTema(s.id)) return s.id;
+    return "geral";
+  }
+  function holderFor(ctx) { return ctx === "geral" ? state.geral : getTema(ctx); }
+  function saveHolder(ctx) {
+    if (ctx === "geral") persist("conversas", state.geral);
+    else { var t = getTema(ctx); if (t) persist("temas", t); }
+  }
+
+  function promptChatGeral() {
+    var temas = state.temas.map(function (t, i) {
+      return (i + 1) + ". " + t.titulo + (t.estudado ? " (estudado)" : "") + (t.guia ? " (tem guia)" : "");
+    }).join("\n");
+    var trabs = state.trabalhos.map(function (w) {
+      return "- " + (w.titulo || "Sem título") + " · " + (w.status === "entregue" ? "entregue" : prazoTexto(daysLeft(w.prazo)));
+    }).join("\n");
+    var atual = state.sel && state.sel.kind === "trab" ? getTrab(state.sel.id) : null;
+    return [
+      "Você é um monitor de universidade e está estudando com um estudante do 1º período de Direito, na disciplina Instituições Judiciais e Ética. Responda em português do Brasil, de forma clara e didática, em respostas curtas ou médias, em Markdown simples (- para listas, **negrito**).",
+      "Converse como quem estuda junto: explique, dê exemplos, ajude a planejar os estudos e, quando fizer sentido, termine com uma pergunta para checar o entendimento.",
+      "Não invente números de artigos, julgados, resoluções nem autores. Se não tiver certeza, diga isso e peça ao estudante que confira no texto atualizado e no material do professor.",
+      "Se o estudante pedir que você faça um trabalho por ele, oriente o caminho sem entregar texto pronto.",
+      "Hoje: " + new Date().toLocaleDateString("pt-BR") + ".",
+      "",
+      "Temas da pauta do estudante:\n" + (temas || "(nenhum cadastrado)"),
+      "Trabalhos:\n" + (trabs || "(nenhum cadastrado)"),
+      atual ? "O estudante está com este trabalho aberto: " + (atual.titulo || "Sem título") + "\nOrientação do professor:\n" + (atual.enunciado && atual.enunciado.trim() ? atual.enunciado.trim().slice(0, 4000) : "(não informada)") : ""
+    ].join("\n");
+  }
+
+  function enviarMonitor(ctx, texto) {
+    var key = "chat:" + ctx, hd = holderFor(ctx);
+    texto = (texto || "").trim();
+    if (!hd || jobs[key] || !sampleFn || !texto) return;
+    hd.chat = (hd.chat || []).concat({ role: "user", content: texto.slice(0, 4000) });
+    chatDraft[ctx] = "";
+    saveHolder(ctx);
+
+    var turns = hd.chat.slice(-20);
+    while (turns.length && turns[0].role !== "user") turns.shift();
+    var intro = ctx === "geral" ? promptChatGeral() : promptChat(hd);
+    var input = [{ role: "user", content: intro }].concat(turns.map(function (m) { return { role: m.role, content: m.content }; }));
+
+    var ctl = new AbortController();
+    jobs[key] = { ctl: ctl, text: "" }; delete jobErr[key];
+    renderMain(true);
+
+    function anexar(text) {
+      var x = holderFor(ctx); if (!x) return;
+      x.chat = (x.chat || []).concat({ role: "assistant", content: text }).slice(-40);
+      saveHolder(ctx);
+    }
+    function devolver() {
+      var x = holderFor(ctx);
+      if (x && x.chat && x.chat.length && x.chat[x.chat.length - 1].role === "user") {
+        chatDraft[ctx] = x.chat[x.chat.length - 1].content;
+        x.chat = x.chat.slice(0, -1);
+        saveHolder(ctx);
+      }
+    }
+    sampleFn(input, {
+      signal: ctl.signal, cache: false,
+      onText: function (u) {
+        if (!jobs[key]) return;
+        jobs[key].text = u.text; paintLive(key);
+        if (monitorLog && monitorLog.isConnected) monitorLog.scrollTop = monitorLog.scrollHeight;
+      }
+    }).then(function (r) {
+      delete jobs[key];
+      anexar(r.text);
+    }).catch(function (e) {
+      var partial = e && e.text;
+      delete jobs[key];
+      if (!e || e.code !== "cancelled") jobErr[key] = copyFor(e && e.code);
+      if (partial) anexar(partial); else devolver();
+    }).then(finishUI);
+  }
+
+  function monitorBox(ctx) {
+    var key = "chat:" + ctx, j = jobs[key], hd = holderFor(ctx), msgs = (hd && hd.chat) || [];
+    var tema = ctx === "geral" ? null : getTema(ctx);
+    var trab = !tema && state.sel && state.sel.kind === "trab" ? getTrab(state.sel.id) : null;
+    var box = h("section", { class: "panel stack monitor", id: "monitor" });
+    box.append(h("div", { class: "row between" },
+      h("h2", { class: "label", style: "margin:0", text: "Monitor" }),
+      h("span", { class: "pill accent", style: "white-space:normal;overflow-wrap:anywhere", text: tema ? "Tema: " + tema.titulo : trab ? "Trabalho: " + (trab.titulo || "Sem título") : "Conversa geral da disciplina" })));
+    if (!msgs.length && !j) {
+      box.append(h("p", { class: "muted", style: "margin:0", text: tema
+        ? "Pergunte sobre este tema como se estivesse estudando junto. O monitor conhece o seu guia e as suas anotações de aula."
+        : "Tire dúvidas sobre a disciplina, peça um plano de estudo ou ajuda para organizar os trabalhos. Ao abrir um tema, a conversa passa a ser sobre ele." }));
+    }
+
+    var log = h("div", { class: "chat-log" });
+    msgs.forEach(function (m) {
+      if (m.role === "user") {
+        log.append(h("div", { class: "msg msg-user" }, h("span", { class: "msg-who", text: "Você" }), h("p", { class: "q-text", text: m.content })));
+      } else {
+        var n = h("div", { class: "prose" }); renderMd(m.content, n);
+        log.append(h("div", { class: "msg msg-bot" }, h("span", { class: "msg-who", text: "Monitor" }), n));
+      }
+    });
+    if (j) {
+      var ln = h("div", { class: "prose" }); live[key] = ln;
+      if (j.text) renderMd(j.text, ln); else ln.append(h("p", { class: "muted", text: "Pensando…" }));
+      log.append(h("div", { class: "msg msg-bot" }, h("span", { class: "msg-who", text: "Monitor" }), ln));
+    }
+    monitorLog = null;
+    if (msgs.length || j) {
+      box.append(log); monitorLog = log;
+      requestAnimationFrame(function () { log.scrollTop = log.scrollHeight; });
+    }
+    if (jobErr[key]) box.append(h("div", { class: "note bad", role: "alert", text: jobErr[key] }));
+    if (!sampleFn) box.append(h("div", { class: "note", text: NO_CLAUDE }));
+
+    if (!msgs.length && !j && sampleFn) {
+      var sugs = tema
+        ? ["Explique este tema com um exemplo", "O que costuma cair em prova sobre isso?", "Me teste com uma pergunta"]
+        : ["Monte um plano de estudo para esta semana", "O que é mais importante nesta disciplina?", "Me teste sobre os temas da pauta"];
+      box.append(h("div", { class: "chips" }, sugs.map(function (s) {
+        return h("button", { class: "chip", type: "button", onclick: function () { enviarMonitor(ctx, s); } }, s);
+      })));
+    }
+
+    var inp = h("textarea", { id: "monitor-input", rows: "3", placeholder: "Escreva sua pergunta (Ctrl+Enter envia)", value: chatDraft[ctx] || "", disabled: !sampleFn,
+      oninput: function () { chatDraft[ctx] = inp.value; },
+      onkeydown: function (e) { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); enviarMonitor(ctx, inp.value); } } });
+    var limpar = null;
+    if (msgs.length && !j) {
+      limpar = h("button", { class: "btn ghost small danger", type: "button" }, "Limpar conversa");
+      armDelete(limpar, function () { var y = holderFor(ctx); if (y) { y.chat = []; saveHolder(ctx); chatDraft[ctx] = ""; renderMain(true); } });
+    }
+    box.append(h("label", { class: "field", for: "monitor-input" }, "Sua pergunta", inp),
+      h("div", { class: "row" },
+        h("button", { class: "btn", type: "button", disabled: !sampleFn || !!j, onclick: function () { enviarMonitor(ctx, inp.value); } }, "Enviar"),
+        j ? h("button", { class: "btn ghost small", type: "button", onclick: function () { stopJob(key); } }, "Parar") : null,
+        limpar));
+    return box;
+  }
+
+  function gerarOrientacao(id) {
+    var w = getTrab(id); if (!w) return;
+    flushAll();
+    startStream("orient:" + id, promptTrabalho(w), function (text, cut) {
+      var x = getTrab(id); if (!x) return;
+      x.orientacao = text; x.orientacaoCortada = cut;
+      if (x.status === "a-fazer" || !x.status) x.status = "andamento";
+      persist("trabalhos", x);
+    });
+  }
+
+  function gerarPerguntas(id) {
+    var key = "perg:" + id;
+    var t = getTema(id); if (!t || jobs[key] || !sampleFn) return;
+    var ctl = new AbortController();
+    jobs[key] = { ctl: ctl, text: "" }; delete jobErr[key];
+    renderMain(true);
+    sampleFn.json(promptPerguntas(t), { signal: ctl.signal, cache: false }).then(function (arr) {
+      delete jobs[key];
+      var x = getTema(id); if (!x) return;
+      var novas = (Array.isArray(arr) ? arr : []).filter(function (q) {
+        return q && typeof q.pergunta === "string" && q.pergunta.trim() && typeof q.gabarito === "string";
+      }).slice(0, 8).map(function (q) {
+        return { id: uid(), tipo: q.tipo === "objetiva" ? "objetiva" : "discursiva", pergunta: q.pergunta.trim(), gabarito: q.gabarito.trim(), resposta: "", nota: null, feedback: "", revelado: false };
+      });
+      if (!novas.length) { jobErr[key] = copyFor("invalid_json"); return; }
+      x.perguntas = (x.perguntas || []).concat(novas);
+      persist("temas", x);
+    }).catch(function (e) {
+      delete jobs[key];
+      if (!e || e.code !== "cancelled") jobErr[key] = copyFor(e && e.code);
+    }).then(finishUI);
+  }
+
+  function corrigir(temaId, qid) {
+    var key = "corr:" + qid;
+    var t = getTema(temaId); if (!t || jobs[key] || !sampleFn) return;
+    flushAll();
+    var q = (t.perguntas || []).filter(function (p) { return p.id === qid; })[0];
+    if (!q) return;
+    if (!q.resposta || !q.resposta.trim()) { jobErr[key] = "Escreva sua resposta antes de pedir a correção."; renderMain(true); return; }
+    var ctl = new AbortController();
+    jobs[key] = { ctl: ctl, text: "" }; delete jobErr[key];
+    renderMain(true);
+    sampleFn.json(promptCorrecao(t, q), { signal: ctl.signal, cache: false }).then(function (r) {
+      delete jobs[key];
+      var x = getTema(temaId); if (!x) return;
+      var qq = (x.perguntas || []).filter(function (p) { return p.id === qid; })[0];
+      var nota = Number(r && r.nota);
+      if (!qq || isNaN(nota) || typeof r.feedback !== "string") { jobErr[key] = copyFor("invalid_json"); return; }
+      qq.nota = Math.max(0, Math.min(10, nota)); qq.feedback = r.feedback.trim(); qq.revelado = true;
+      persist("temas", x);
+    }).catch(function (e) {
+      delete jobs[key];
+      if (!e || e.code !== "cancelled") jobErr[key] = copyFor(e && e.code);
+    }).then(finishUI);
+  }
+
+  /* ---------- ações sobre os dados ---------- */
+  function addTemas(titles) {
+    var base = Date.now(), n = 0;
+    titles.forEach(function (raw, i) {
+      var titulo = raw.replace(/^\s*(?:[-*•]|\d+[.)])\s*/, "").trim();
+      if (!titulo) return;
+      var t = { id: uid(), titulo: titulo.slice(0, 160), notas: "", guia: "", perguntas: [], estudado: false, criadoEm: base + i };
+      state.temas.push(t); persist("temas", t); n++;
+    });
+    if (n) { renderRail(); renderMain(true); }
+    return n;
+  }
+  function addTrabalho() {
+    var w = { id: uid(), titulo: "Novo trabalho", enunciado: "", prazo: "", status: "a-fazer", orientacao: "", criadoEm: Date.now() };
+    state.trabalhos.push(w); persist("trabalhos", w);
+    state.sel = { kind: "trab", id: w.id };
+    renderRail(); renderMain(true);
+  }
+  function select(kind, id) {
+    flushAll();
+    state.sel = kind ? { kind: kind, id: id } : null;
+    if (kind === "tema") state.tab = "guia";
+    renderRail(); renderMain(true);
+    var m = $("#mesa"); if (m && m.getBoundingClientRect().top < 0) m.scrollIntoView({ block: "start" });
+  }
+  function armDelete(btn, action) {
+    var label = btn.textContent;
+    btn.addEventListener("click", function () {
+      if (btn.dataset.armed) { action(); return; }
+      btn.dataset.armed = "1"; btn.textContent = "Confirmar exclusão";
+      setTimeout(function () { if (btn.isConnected) { delete btn.dataset.armed; btn.textContent = label; } }, 4000);
+    });
+  }
+
+  /* ---------- números ---------- */
+  function statsTema(t) {
+    var ps = t.perguntas || [];
+    var corr = ps.filter(function (q) { return q.nota != null; });
+    var media = corr.length ? corr.reduce(function (a, q) { return a + q.nota; }, 0) / corr.length : null;
+    return { total: ps.length, corrigidas: corr.length, media: media };
+  }
+
+  /* ---------- revisões: regras ---------- */
+  var revShown = {}, chatDraft = {};
+
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function hojeStr() { var d = new Date(); return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  function addDias(n) { var d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + n); return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+
+  function temMaterial(t) {
+    return !!(t.guia || (t.notas && t.notas.trim()) || (t.perguntas && t.perguntas.length) || t.estudado);
+  }
+  function precisaRefazer(q) {
+    if (q.autoRev) return q.autoRev === "errei";
+    return q.nota == null || q.nota < 7;
+  }
+  function revStatus(t) {
+    if (!t.proxRevisao) return { due: true, d: null, texto: "primeira revisão", cls: "accent" };
+    var d = daysLeft(t.proxRevisao);
+    if (d == null) return { due: true, d: null, texto: "primeira revisão", cls: "accent" };
+    if (d < 0) return { due: true, d: d, texto: "atrasada há " + (-d) + (d === -1 ? " dia" : " dias"), cls: "bad" };
+    if (d === 0) return { due: true, d: 0, texto: "revisar hoje", cls: "warn" };
+    return { due: false, d: d, texto: d === 1 ? "revisar amanhã" : "revisar em " + d + " dias", cls: "good" };
+  }
+  function temasRevisao() {
+    return state.temas.filter(temMaterial).sort(function (a, b) {
+      var sa = revStatus(a), sb = revStatus(b);
+      if (sa.due !== sb.due) return sa.due ? -1 : 1;
+      return (sa.d == null ? -1e9 : sa.d) - (sb.d == null ? -1e9 : sb.d);
+    });
+  }
+
+  /* ---------- tags ---------- */
+  function tagKey(s) { return String(s).trim().toLowerCase(); }
+  function normTag(s) { return String(s).replace(/^#+/, "").replace(/\s+/g, " ").trim().slice(0, 24); }
+
+  function todasTags() {
+    var mapa = {};
+    state.temas.forEach(function (t) {
+      (t.tags || []).forEach(function (g) {
+        var k = tagKey(g);
+        if (!mapa[k]) mapa[k] = { key: k, nome: g, n: 0 };
+        mapa[k].n++;
+      });
+    });
+    return Object.keys(mapa).map(function (k) { return mapa[k]; }).sort(function (a, b) {
+      return b.n - a.n || a.nome.localeCompare(b.nome, "pt-BR");
+    });
+  }
+  function temasDaTag(key) {
+    return state.temas.filter(function (t) {
+      return key === "__sem" ? !(t.tags && t.tags.length) : (t.tags || []).some(function (g) { return tagKey(g) === key; });
+    });
+  }
+  function addTag(id, raw) {
+    var x = getTema(id), nome = normTag(raw);
+    if (!x || !nome) return false;
+    x.tags = x.tags || [];
+    if (x.tags.some(function (g) { return tagKey(g) === tagKey(nome); })) return false;
+    if (x.tags.length >= 8) return "max";
+    var ja = todasTags().filter(function (g) { return g.key === tagKey(nome); })[0];
+    x.tags.push(ja ? ja.nome : nome);
+    persist("temas", x); renderRail();
+    return true;
+  }
+
+  /* ---------- barra lateral ---------- */
+  function renderRail() {
+    var lg = $("#lista-tags"); lg.textContent = "";
+    var tg = todasTags(), semTag = state.temas.filter(function (t) { return !(t.tags && t.tags.length); }).length;
+    function chipTag(key, nome, n) {
+      var cur = state.sel && state.sel.kind === "tag" && state.sel.id === key;
+      return h("button", { class: "chip", type: "button", "aria-current": cur ? "true" : "false", onclick: function () { select("tag", key); } },
+        nome, h("span", { class: "chip-n", text: String(n) }));
+    }
+    if (!tg.length) lg.append(h("p", { class: "rail-empty", style: "margin:0", text: "Abra um tema e adicione tags. Elas aparecem aqui para você achar os temas de cada assunto com um clique." }));
+    else {
+      tg.forEach(function (g) { lg.append(chipTag(g.key, g.nome, g.n)); });
+      if (semTag) lg.append(chipTag("__sem", "Sem tag", semTag));
+    }
+
+    $("#home-link").setAttribute("aria-current", state.sel ? "false" : "true");
+    var emRev = state.sel && (state.sel.kind === "rev" || state.sel.kind === "revhome");
+    $("#rev-link").setAttribute("aria-current", emRev ? "true" : "false");
+    $("#mat-link").setAttribute("aria-current", state.sel && state.sel.kind === "mat" ? "true" : "false");
+    var nm = state.materiais.length;
+    $("#mat-count").textContent = !nm ? "Nenhum link salvo" : nm + (nm === 1 ? " link salvo" : " links salvos");
+    var itens = state.temas.filter(temMaterial);
+    var hoje = itens.filter(function (t) { return revStatus(t).due; }).length;
+    $("#rev-count").textContent = !itens.length ? "Nada para revisar ainda" : hoje ? hoje + (hoje === 1 ? " tema para revisar hoje" : " temas para revisar hoje") : "Nenhuma revisão pendente hoje";
+
+    var lt = $("#lista-temas"); lt.textContent = "";
+    if (!state.temas.length) lt.append(h("li", { class: "rail-empty", text: "Nenhum tema ainda. Adicione abaixo o que o professor já passou." }));
+    state.temas.forEach(function (t, i) {
+      var s = statsTema(t), partes = [];
+      partes.push(t.guia ? "guia pronto" : "sem guia");
+      if (s.total) partes.push(s.corrigidas + "/" + s.total + " corrigidas");
+      if (s.media != null) partes.push("média " + fmtNota(s.media));
+      if (t.estudado) partes.unshift("estudado");
+      var cur = state.sel && state.sel.kind === "tema" && state.sel.id === t.id;
+      lt.append(h("li", null, h("button", { class: "item", type: "button", "aria-current": cur ? "true" : "false", onclick: function () { select("tema", t.id); } },
+        h("b", { text: (i + 1) + ". " + t.titulo }), h("small", { text: partes.join(" · ") }))));
+    });
+
+    var lw = $("#lista-trabalhos"); lw.textContent = "";
+    if (!state.trabalhos.length) lw.append(h("li", { class: "rail-empty", text: "Cadastre os trabalhos pedidos pelo professor para receber orientação." }));
+    state.trabalhos.forEach(function (w) {
+      var d = daysLeft(w.prazo);
+      var sub = w.status === "entregue" ? "entregue" : prazoTexto(d);
+      var cur = state.sel && state.sel.kind === "trab" && state.sel.id === w.id;
+      lw.append(h("li", null, h("button", { class: "item", type: "button", "aria-current": cur ? "true" : "false", onclick: function () { select("trab", w.id); } },
+        h("b", { text: w.titulo || "Sem título" }), h("small", { text: sub }))));
+    });
+  }
+
+  /* ---------- mesa de estudo ---------- */
+  function mainBusy() {
+    var a = document.activeElement, m = $("#mesa");
+    return !!(a && m.contains(a) && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName));
+  }
+
+  function renderMain(force) {
+    if (!force && mainBusy()) return;
+    flushAll();
+    var a = document.activeElement, refocus = !!(a && a.id === "monitor-input");
+    var m = $("#mesa"); m.textContent = ""; live = {};
+    renderView(m);
+    var mon = monitorBox(chatCtx());
+    m.append(mon);
+    if (monIO) monIO.disconnect();
+    if (window.IntersectionObserver) {
+      monIO = new IntersectionObserver(function (es) { var f = $("#fab-monitor"); if (f) f.hidden = es[es.length - 1].isIntersecting; });
+      monIO.observe(mon);
+    }
+    if (refocus) {
+      var i = $("#monitor-input");
+      if (i && !i.disabled) { i.focus({ preventScroll: true }); i.selectionStart = i.selectionEnd = i.value.length; }
+    }
+  }
+
+  function renderView(m) {
+    var s = state.sel;
+    if (s && s.kind === "tema") { var t = getTema(s.id); if (t) { m.append(temaView(t)); return; } }
+    if (s && s.kind === "trab") { var w = getTrab(s.id); if (w) { m.append(trabView(w)); return; } }
+    if (s && s.kind === "mat") { m.append(matView()); return; }
+    if (s && s.kind === "tag") {
+      if (s.id === "__sem" || todasTags().some(function (g) { return g.key === s.id; })) { m.append(tagView(s.id)); return; }
+    }
+    if (s && s.kind === "revhome") { m.append(revHomeView()); return; }
+    if (s && s.kind === "rev") {
+      var tr = getTema(s.id);
+      if (tr) { m.append(revView(tr)); return; }
+      state.sel = { kind: "revhome" }; renderRail(); m.append(revHomeView()); return;
+    }
+    state.sel = null; renderRail();
+    m.append(homeView());
+  }
+
+  function jobBox(key, runningLabel, stopLabel) {
+    var j = jobs[key];
+    var box = h("div", { class: "stack" });
+    if (j) {
+      var node = h("div", { class: "prose" });
+      live[key] = node;
+      if (j.text) renderMd(j.text, node); else node.append(h("p", { class: "muted", text: runningLabel }));
+      box.append(node, h("div", { class: "row" }, h("button", { class: "btn ghost small", type: "button", onclick: function () { stopJob(key); } }, stopLabel || "Parar")));
+    }
+    if (jobErr[key]) box.append(h("div", { class: "note bad", role: "alert", text: jobErr[key] }));
+    return box;
+  }
+
+  /* --- início --- */
+  function homeView() {
+    var wrap = h("div", { class: "mesa" });
+    if (!state.loaded) {
+      wrap.append(h("section", { class: "panel" }, h("p", { class: "muted", style: "margin:0", text: "Carregando sua pauta…" })));
+      return wrap;
+    }
+    var n = state.temas.length;
+    var estudados = state.temas.filter(function (t) { return t.estudado; }).length;
+    var tot = 0, corr = 0, soma = 0;
+    state.temas.forEach(function (t) {
+      var s = statsTema(t); tot += s.total; corr += s.corrigidas;
+      (t.perguntas || []).forEach(function (q) { if (q.nota != null) soma += q.nota; });
+    });
+
+    if (!n) {
+      wrap.append(h("section", { class: "empty" },
+        h("h3", { text: "Comece pela pauta da disciplina" }),
+        h("p", { text: "Cadastre os temas que o professor já abordou, um por linha, no campo à esquerda. Para cada tema, o monitor monta um guia de estudo, faz perguntas e corrige suas respostas. Os trabalhos entram na lista ao lado, com orientação passo a passo até a data de entrega." }),
+        h("p", { class: "muted", text: "Ou comece por um destes temas comuns da disciplina:" }),
+        h("div", { class: "chips" }, [
+          "Organização do Poder Judiciário",
+          "Funções essenciais à Justiça",
+          "Ética profissional e Estatuto da OAB",
+          "Princípios constitucionais do processo",
+          "Ética, moral e Direito"
+        ].map(function (x) { return h("button", { class: "chip", type: "button", onclick: function () { addTemas([x]); } }, x); }))
+      ));
+      if (!sampleFn) wrap.append(h("div", { class: "note", text: NO_CLAUDE }));
+      return wrap;
+    }
+
+    wrap.append(h("section", { class: "panel" },
+      h("h2", { class: "label", text: "Andamento da disciplina" }),
+      h("dl", { class: "facts" },
+        h("div", null, h("dt", { text: "Temas estudados" }), h("dd", { text: estudados + "/" + n })),
+        h("div", null, h("dt", { text: "Perguntas corrigidas" }), h("dd", { text: corr + "/" + tot })),
+        h("div", null, h("dt", { text: "Média nas perguntas" }), h("dd", { text: corr ? fmtNota(soma / corr) : "–" })),
+        h("div", null, h("dt", { text: "Trabalhos abertos" }), h("dd", { text: String(state.trabalhos.filter(function (w) { return w.status !== "entregue"; }).length) }))
+      )));
+
+    var abertos = state.trabalhos.filter(function (w) { return w.status !== "entregue"; })
+      .sort(function (a, b) {
+        var da = daysLeft(a.prazo), db = daysLeft(b.prazo);
+        return (da == null ? 1e9 : da) - (db == null ? 1e9 : db);
+      });
+    var prox = abertos[0];
+    var pend = state.temas.filter(function (t) { return !t.estudado; })
+      .sort(function (a, b) { return (a.guia ? 1 : 0) - (b.guia ? 1 : 0); }).slice(0, 4);
+
+    var todo = h("section", { class: "panel stack" }, h("h2", { class: "label", text: "Para hoje" }));
+    if (prox) {
+      var d = daysLeft(prox.prazo);
+      todo.append(h("div", { class: "row between" },
+        h("div", null, h("b", { text: prox.titulo || "Sem título" }), " ", h("span", { class: "pill " + (d != null && d < 0 ? "bad" : d != null && d <= 3 ? "warn" : "accent"), text: prazoTexto(d) })),
+        h("button", { class: "btn ghost small", type: "button", onclick: function () { select("trab", prox.id); } }, "Abrir trabalho")));
+    }
+    if (pend.length) {
+      todo.append(h("div", { class: "stack" },
+        h("span", { class: "muted", text: "Temas que ainda pedem estudo:" }),
+        h("div", { class: "chips" }, pend.map(function (t) { return h("button", { class: "chip", type: "button", onclick: function () { select("tema", t.id); } }, t.titulo); }))));
+    } else {
+      todo.append(h("p", { class: "muted", style: "margin:0", text: "Todos os temas da pauta estão marcados como estudados. Revise as perguntas com nota baixa." }));
+    }
+    wrap.append(todo);
+    if (!sampleFn) wrap.append(h("div", { class: "note", text: NO_CLAUDE }));
+    return wrap;
+  }
+
+  /* --- tema --- */
+  function temaView(t) {
+    var id = t.id;
+    var root = h("div", { class: "mesa" });
+
+    var titulo = h("input", { class: "title-input", id: "tema-titulo", type: "text", value: t.titulo, "aria-label": "Título do tema",
+      oninput: function () { debounced("tt:" + id, function () { var x = getTema(id); if (x) { x.titulo = titulo.value.trim() || "Tema sem título"; persist("temas", x); renderRail(); } }); } });
+    var del = h("button", { class: "btn ghost small danger", type: "button" }, "Excluir");
+    armDelete(del, function () { removeItem("temas", id); state.sel = null; renderRail(); renderMain(true); });
+    var estudado = h("input", { type: "checkbox", id: "tema-estudado", checked: !!t.estudado,
+      onchange: function () { var x = getTema(id); if (x) { x.estudado = estudado.checked; persist("temas", x); renderRail(); } } });
+
+    root.append(h("section", { class: "panel mesa-head" },
+      titulo,
+      tagsEditor(t),
+      h("div", { class: "row between" },
+        h("label", { class: "check", for: "tema-estudado" }, estudado, "Já estudei este tema"),
+        h("div", { class: "row" },
+          h("button", { class: "btn ghost small", type: "button", onclick: function () { select("rev", id); } }, "Abrir revisão"),
+          del))));
+
+    var tabs = [["guia", "Guia de estudo"], ["perguntas", "Perguntas"], ["aulas", "Anotações de aula"]];
+    root.append(h("div", { class: "tabs", role: "tablist" }, tabs.map(function (tb) {
+      return h("button", { class: "tab", type: "button", role: "tab", "aria-selected": state.tab === tb[0] ? "true" : "false",
+        onclick: function () { state.tab = tb[0]; renderMain(true); } }, tb[1]);
+    })));
+
+    var body = h("section", { class: "panel stack" });
+    if (state.tab === "guia") body.append(guiaPanel(t));
+    else if (state.tab === "perguntas") body.append(perguntasPanel(t));
+    else body.append(aulasPanel(t));
+    root.append(body);
+    return root;
+  }
+
+  function guiaPanel(t) {
+    var id = t.id, key = "guia:" + id, box = h("div", { class: "stack" });
+    var running = !!jobs[key];
+    if (!sampleFn) box.append(h("div", { class: "note", text: NO_CLAUDE }));
+
+    if (running || jobErr[key]) box.append(jobBox(key, "Montando o guia de estudo…", "Parar"));
+    if (!running) {
+      if (t.guia) {
+        var node = h("div", { class: "prose" }); renderMd(t.guia, node);
+        box.append(node);
+        if (t.guiaCortado) box.append(h("div", { class: "note", text: "O guia foi interrompido antes do fim. Gere de novo para obter a versão completa." }));
+        box.append(h("div", { class: "row" },
+          h("button", { class: "btn ghost small", type: "button", disabled: !sampleFn, onclick: function () { gerarGuia(id); } }, "Gerar de novo"),
+          h("span", { class: "muted", text: "Confira os dispositivos citados no texto atualizado e no material do professor." })));
+      } else {
+        box.append(h("div", { class: "empty" },
+          h("h3", { text: "Ainda não há guia para este tema" }),
+          h("p", { text: "O guia reúne a ideia central, os conceitos, a base normativa, exemplos e um roteiro de estudo. Se você anotou o que o professor disse em aula, ele usa suas anotações." }),
+          h("button", { class: "btn", type: "button", disabled: !sampleFn, onclick: function () { gerarGuia(id); } }, "Gerar guia de estudo")));
+      }
+    }
+    return box;
+  }
+
+  function chatSection(t) {
+    var id = t.id, key = "chat:" + id, j = jobs[key], msgs = t.chat || [];
+    var box = h("section", { class: "chat stack" });
+    box.append(h("span", { class: "label", style: "margin:0", text: "Tire dúvidas com o monitor" }));
+    if (!msgs.length && !j) {
+      box.append(h("p", { class: "muted", style: "margin:0", text: "Pergunte como se estivesse estudando junto. O monitor conhece o tema, o seu guia e as suas anotações de aula." }));
+    }
+
+    var log = h("div", { class: "chat-log" });
+    msgs.forEach(function (m) {
+      if (m.role === "user") {
+        log.append(h("div", { class: "msg msg-user" }, h("span", { class: "msg-who", text: "Você" }), h("p", { class: "q-text", text: m.content })));
+      } else {
+        var n = h("div", { class: "prose" }); renderMd(m.content, n);
+        log.append(h("div", { class: "msg msg-bot" }, h("span", { class: "msg-who", text: "Monitor" }), n));
+      }
+    });
+    if (j) {
+      var ln = h("div", { class: "prose" }); live[key] = ln;
+      if (j.text) renderMd(j.text, ln); else ln.append(h("p", { class: "muted", text: "Pensando…" }));
+      log.append(h("div", { class: "msg msg-bot" }, h("span", { class: "msg-who", text: "Monitor" }), ln));
+    }
+    if (msgs.length || j) box.append(log);
+    if (jobErr[key]) box.append(h("div", { class: "note bad", role: "alert", text: jobErr[key] }));
+
+    if (!msgs.length && !j && sampleFn) {
+      box.append(h("div", { class: "chips" }, [
+        "Explique este tema com um exemplo",
+        "O que costuma cair em prova sobre isso?",
+        "Me teste com uma pergunta"
+      ].map(function (s) { return h("button", { class: "chip", type: "button", onclick: function () { enviarChat(id, s); } }, s); })));
+    }
+
+    var inp = h("textarea", { id: "chat-input", rows: "3", placeholder: "Pergunte sobre este tema (Ctrl+Enter envia)", value: chatDraft[id] || "", disabled: !sampleFn,
+      oninput: function () { chatDraft[id] = inp.value; },
+      onkeydown: function (e) { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); enviarChat(id, inp.value); } } });
+    var limpar = null;
+    if (msgs.length && !j) {
+      limpar = h("button", { class: "btn ghost small danger", type: "button" }, "Limpar conversa");
+      armDelete(limpar, function () { var x = getTema(id); if (x) { x.chat = []; persist("temas", x); chatDraft[id] = ""; renderMain(true); } });
+    }
+    box.append(h("label", { class: "field", for: "chat-input" }, "Sua pergunta", inp),
+      h("div", { class: "row" },
+        h("button", { class: "btn", type: "button", disabled: !sampleFn || !!j, onclick: function () { enviarChat(id, inp.value); } }, "Enviar"),
+        j ? h("button", { class: "btn ghost small", type: "button", onclick: function () { stopJob(key); } }, "Parar") : null,
+        limpar));
+    return box;
+  }
+
+  function perguntasPanel(t) {
+    var id = t.id, key = "perg:" + id, box = h("div", { class: "stack" });
+    var ps = t.perguntas || [], s = statsTema(t);
+    if (!sampleFn) box.append(h("div", { class: "note", text: NO_CLAUDE }));
+
+    var running = !!jobs[key];
+    box.append(h("div", { class: "row between" },
+      h("div", { class: "row" },
+        h("button", { class: "btn", type: "button", disabled: !sampleFn || running, onclick: function () { gerarPerguntas(id); } }, ps.length ? "Gerar mais 5 perguntas" : "Gerar 5 perguntas"),
+        ps.length ? h("span", { class: "muted", text: s.corrigidas + " de " + s.total + " corrigidas" + (s.media != null ? " · média " + fmtNota(s.media) : "") }) : null),
+      ps.length ? (function () {
+        var b = h("button", { class: "btn ghost small danger", type: "button" }, "Limpar perguntas");
+        armDelete(b, function () { var x = getTema(id); if (x) { x.perguntas = []; persist("temas", x); renderRail(); renderMain(true); } });
+        return b;
+      })() : null));
+
+    if (running) box.append(jobBox(key, "Elaborando as perguntas…", "Parar"));
+    else if (jobErr[key]) box.append(jobBox(key, "", "Parar"));
+
+    if (!ps.length && !running) {
+      box.append(h("div", { class: "empty" },
+        h("h3", { text: "Nenhuma pergunta ainda" }),
+        h("p", { text: "O monitor cria três perguntas objetivas e duas discursivas sobre o tema. Você responde e ele corrige, apontando o que faltou." })));
+    }
+
+    ps.forEach(function (q, i) {
+      var ck = "corr:" + q.id, corrigindo = !!jobs[ck];
+      var ta = h("textarea", { id: "resp-" + q.id, rows: "4", placeholder: q.tipo === "objetiva" ? "Escreva a letra e, se quiser, sua justificativa" : "Escreva sua resposta", value: q.resposta || "",
+        oninput: function () { debounced("r:" + q.id, function () { var x = getTema(id); if (!x) return; var qq = x.perguntas.filter(function (p) { return p.id === q.id; })[0]; if (qq) { qq.resposta = ta.value; persist("temas", x); } }); } });
+      var corrigida = q.nota != null;
+      var card = h("article", { class: "q" },
+        h("div", { class: "q-meta" },
+          h("span", { class: "pill accent", text: "Pergunta " + (i + 1) }),
+          h("span", { class: "pill", text: q.tipo }),
+          corrigida ? h("span", { class: "pill " + (q.nota >= 7 ? "good" : q.nota >= 5 ? "warn" : "bad"), text: "nota " + fmtNota(q.nota) }) : null),
+        h("p", { class: "q-text", text: q.pergunta }),
+        h("label", { class: "field", for: "resp-" + q.id }, "Sua resposta", ta),
+        h("div", { class: "row" },
+          h("button", { class: "btn small", type: "button", disabled: !sampleFn || corrigindo, onclick: function () { corrigir(id, q.id); } }, corrigindo ? "Corrigindo…" : corrigida ? "Corrigir de novo" : "Corrigir minha resposta"),
+          !q.revelado ? h("button", { class: "btn ghost small", type: "button", onclick: function () {
+            var x = getTema(id); if (!x) return; var qq = x.perguntas.filter(function (p) { return p.id === q.id; })[0];
+            if (qq) { qq.revelado = true; persist("temas", x); renderMain(true); }
+          } }, "Ver gabarito") : null,
+          corrigindo ? h("button", { class: "btn ghost small", type: "button", onclick: function () { stopJob(ck); } }, "Parar") : null),
+        jobErr[ck] ? h("div", { class: "note bad", role: "alert", text: jobErr[ck] }) : null,
+        corrigida && q.feedback ? h("div", { class: "fb" }, h("span", { class: "label", style: "margin:0", text: "Correção" }), h("p", { text: q.feedback })) : null,
+        q.revelado ? h("div", { class: "fb" }, h("span", { class: "label", style: "margin:0", text: "Gabarito" }), h("p", { text: q.gabarito })) : null);
+      box.append(card);
+    });
+    return box;
+  }
+
+  function aulasPanel(t) {
+    var id = t.id;
+    var ta = h("textarea", { id: "tema-notas", rows: "12", value: t.notas || "",
+      placeholder: "Tópicos da aula, trechos do plano de ensino, leis citadas, o que o professor disse que cai na prova…",
+      oninput: function () { debounced("n:" + id, function () { var x = getTema(id); if (x) { x.notas = ta.value; persist("temas", x); } }); } });
+    return h("div", { class: "stack" },
+      h("label", { class: "field", for: "tema-notas" }, "O que o professor abordou neste tema", ta),
+      h("p", { class: "muted", style: "margin:0", text: "O guia de estudo e as perguntas usam este texto. Quanto mais fiel à aula, mais útil o resultado. Gere o guia de novo depois de atualizar as anotações." }));
+  }
+
+  /* --- materiais de estudo --- */
+  function normUrl(s) {
+    s = String(s || "").trim();
+    if (!s) return null;
+    if (!/^[a-z][a-z0-9+.-]*:/i.test(s)) s = "https://" + s;
+    try {
+      var u = new URL(s);
+      return u.protocol === "http:" || u.protocol === "https:" ? u.href : null;
+    } catch (e) { return null; }
+  }
+  function hostOf(url) {
+    try { return new URL(url).hostname.replace(/^www\./, ""); } catch (e) { return url; }
+  }
+  function temaOptions(sel) {
+    var ops = [h("option", { value: "", text: "Nenhum tema" })];
+    state.temas.forEach(function (t, i) {
+      var op = h("option", { value: t.id, text: (i + 1) + ". " + t.titulo });
+      if (sel === t.id) op.selected = true;
+      ops.push(op);
+    });
+    return ops;
+  }
+  function checarMaterial(nome, url) {
+    if (!url) return { erro: "Cole um link que comece com http:// ou https://, ou apenas o endereço do site." };
+    if (!nome.trim()) return { erro: "Dê um nome ao material para encontrá-lo depois." };
+    return { ok: true };
+  }
+
+  function matView() {
+    var wrap = h("div", { class: "mesa" });
+    /* formulário de novo material */
+    var url = h("input", { id: "mat-url", type: "text", inputmode: "url", autocomplete: "off", placeholder: "Cole o link do documento, artigo ou vídeo" });
+    var nome = h("input", { id: "mat-nome", type: "text", maxlength: "120", autocomplete: "off", placeholder: "Ex.: Artigo: Sobre as Leis Penais" });
+    var tema = h("select", { id: "mat-tema" }, temaOptions(""));
+    var erro = h("div", { class: "note bad wide", role: "alert", hidden: true });
+    var form = h("form", { class: "mat-form" },
+      h("label", { class: "field wide", for: "mat-url" }, "Link", url),
+      h("label", { class: "field", for: "mat-nome" }, "Nome do material", nome),
+      h("label", { class: "field", for: "mat-tema" }, "Tema relacionado (opcional)", tema),
+      erro,
+      h("div", { class: "wide" }, h("button", { class: "btn", type: "submit" }, "Salvar material")));
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var u = normUrl(url.value), c = checarMaterial(nome.value, u);
+      if (!c.ok) { erro.textContent = c.erro; erro.hidden = false; (u ? nome : url).focus(); return; }
+      var m = { id: uid(), titulo: nome.value.trim().slice(0, 120), url: u, temaId: tema.value || "", criadoEm: Date.now() };
+      state.materiais.push(m); persist("materiais", m);
+      renderRail(); renderMain(true);
+    });
+    wrap.append(h("section", { class: "panel stack" }, h("h2", { class: "label", text: "Adicionar material" }), form));
+
+    /* lista */
+    if (!state.loaded) {
+      wrap.append(h("section", { class: "panel" }, h("p", { class: "muted", style: "margin:0", text: "Carregando seus materiais…" })));
+      return wrap;
+    }
+    var todos = state.materiais.slice().sort(function (a, b) { return (b.criadoEm || 0) - (a.criadoEm || 0); });
+    if (!todos.length) {
+      wrap.append(h("section", { class: "empty" },
+        h("h3", { text: "Nenhum material salvo ainda" }),
+        h("p", { text: "Guarde aqui os links que você quer revisar: um documento do Google Docs com um artigo de lei, um texto da faculdade, um vídeo. Dê um nome a cada um e, se quiser, ligue-o a um tema. O material do tema também aparece na tela de revisão." })));
+      return wrap;
+    }
+
+    var f = state.matFiltro;
+    var lista = todos.filter(function (m) {
+      if (!f) return true;
+      if (f === "__sem") return !m.temaId || !getTema(m.temaId);
+      return m.temaId === f;
+    });
+
+    var filtro = h("select", { id: "mat-filtro", "aria-label": "Filtrar por tema", style: "max-width:260px",
+      onchange: function () { state.matFiltro = filtro.value; renderMain(true); } },
+      [h("option", { value: "", text: "Todos os materiais" }), h("option", { value: "__sem", text: "Sem tema" })].concat(state.temas.map(function (t, i) {
+        return h("option", { value: t.id, text: (i + 1) + ". " + t.titulo });
+      })));
+    filtro.value = f;
+
+    var painel = h("section", { class: "panel stack" },
+      h("div", { class: "row between" },
+        h("h2", { class: "label", style: "margin:0", text: lista.length + (lista.length === 1 ? " material" : " materiais") }),
+        filtro));
+    if (!lista.length) painel.append(h("p", { class: "muted", style: "margin:0", text: "Nenhum material neste filtro." }));
+
+    lista.forEach(function (m) {
+      painel.append(state.matEdit === m.id ? matEditRow(m) : matRow(m));
+    });
+    wrap.append(painel);
+    return wrap;
+  }
+
+  function matRow(m) {
+    var t = m.temaId ? getTema(m.temaId) : null;
+    var del = h("button", { class: "btn ghost small danger", type: "button" }, "Excluir");
+    armDelete(del, function () { removeItem("materiais", m.id); renderRail(); renderMain(true); });
+    return h("div", { class: "rev-row" },
+      h("div", null,
+        h("a", { class: "mat-link", href: m.url, target: "_blank", rel: "noopener noreferrer" }, m.titulo),
+        h("div", { class: "q-meta" },
+          h("span", { class: "host", text: hostOf(m.url) }),
+          t ? h("button", { class: "pill accent", type: "button", style: "cursor:pointer", title: "Abrir o tema", onclick: function () { select("tema", t.id); } }, t.titulo) : null)),
+      h("div", { class: "row" },
+        h("a", { class: "btn small", href: m.url, target: "_blank", rel: "noopener noreferrer" }, "Abrir"),
+        h("button", { class: "btn ghost small", type: "button", onclick: function () { state.matEdit = m.id; renderMain(true); } }, "Editar"),
+        del));
+  }
+
+  function matEditRow(m) {
+    var nome = h("input", { id: "mat-edit-nome", type: "text", maxlength: "120", value: m.titulo });
+    var url = h("input", { id: "mat-edit-url", type: "text", inputmode: "url", value: m.url });
+    var tema = h("select", { id: "mat-edit-tema" }, temaOptions(m.temaId));
+    var erro = h("div", { class: "note bad wide", role: "alert", hidden: true });
+    var form = h("form", { class: "mat-form", style: "padding:12px 0;border-top:1px solid var(--line)" },
+      h("label", { class: "field", for: "mat-edit-nome" }, "Nome do material", nome),
+      h("label", { class: "field", for: "mat-edit-tema" }, "Tema relacionado", tema),
+      h("label", { class: "field wide", for: "mat-edit-url" }, "Link", url),
+      erro,
+      h("div", { class: "row wide" },
+        h("button", { class: "btn small", type: "submit" }, "Salvar"),
+        h("button", { class: "btn ghost small", type: "button", onclick: function () { state.matEdit = null; renderMain(true); } }, "Cancelar")));
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var u = normUrl(url.value), c = checarMaterial(nome.value, u);
+      if (!c.ok) { erro.textContent = c.erro; erro.hidden = false; return; }
+      var x = state.materiais.filter(function (k) { return k.id === m.id; })[0];
+      if (!x) { state.matEdit = null; renderMain(true); return; }
+      x.titulo = nome.value.trim().slice(0, 120); x.url = u; x.temaId = tema.value || "";
+      persist("materiais", x);
+      state.matEdit = null; renderRail(); renderMain(true);
+    });
+    return form;
+  }
+
+  /* --- tags --- */
+  function tagView(key) {
+    var wrap = h("div", { class: "mesa" });
+    var lista = temasDaTag(key);
+    var nome = key === "__sem" ? "Sem tag" : (todasTags().filter(function (g) { return g.key === key; })[0] || { nome: key }).nome;
+    var painel = h("section", { class: "panel" },
+      h("div", { class: "row between" },
+        h("div", null,
+          h("h2", { class: "label", text: "Tag" }),
+          h("div", { style: "font-family:var(--f-display);font-size:clamp(20px,3.6vw,26px);font-weight:700;overflow-wrap:anywhere", text: nome })),
+        h("span", { class: "pill accent", text: lista.length + (lista.length === 1 ? " tema" : " temas") })));
+    if (!lista.length) painel.append(h("p", { class: "muted", text: "Nenhum tema com esta tag." }));
+    lista.forEach(function (t) {
+      var s = statsTema(t), st = revStatus(t);
+      painel.append(h("div", { class: "rev-row", style: "margin-top:12px" },
+        h("div", null,
+          h("b", { text: t.titulo }),
+          h("div", { class: "q-meta" },
+            t.estudado ? h("span", { class: "pill good", text: "estudado" }) : h("span", { class: "pill", text: "em estudo" }),
+            t.guia ? h("span", { class: "pill", text: "guia pronto" }) : h("span", { class: "pill", text: "sem guia" }),
+            s.total ? h("span", { class: "pill", text: s.corrigidas + "/" + s.total + " perguntas corrigidas" }) : null,
+            temMaterial(t) ? h("span", { class: "pill " + st.cls, text: st.texto }) : null,
+            (t.tags || []).filter(function (g) { return tagKey(g) !== key; }).map(function (g) {
+              return h("button", { class: "pill accent", type: "button", style: "cursor:pointer", onclick: function () { select("tag", tagKey(g)); } }, g);
+            }))),
+        h("div", { class: "row" },
+          h("button", { class: "btn small", type: "button", onclick: function () { select("tema", t.id); } }, "Abrir tema"),
+          temMaterial(t) ? h("button", { class: "btn ghost small", type: "button", onclick: function () { select("rev", t.id); } }, "Revisar") : null)));
+    });
+    wrap.append(painel);
+    return wrap;
+  }
+
+  function tagsEditor(t) {
+    var id = t.id;
+    var chipsBox = h("div", { class: "chips" });
+    var dl = h("datalist", { id: "tags-existentes" }, todasTags().map(function (g) { return h("option", { value: g.nome }); }));
+    var inp = h("input", { id: "tema-tag-novo", type: "text", list: "tags-existentes", maxlength: "24", placeholder: "Nova tag", "aria-label": "Nova tag", style: "max-width:200px" });
+    var erro = h("div", { class: "note bad", role: "alert", hidden: true });
+    function showErr(msg) { erro.textContent = msg || ""; erro.hidden = !msg; }
+
+    function paint() {
+      var x = getTema(id), ts = (x && x.tags) || [];
+      chipsBox.textContent = "";
+      if (!ts.length) chipsBox.append(h("span", { class: "muted", text: "Nenhuma tag ainda" }));
+      ts.forEach(function (g) {
+        chipsBox.append(h("span", { class: "tagchip" },
+          h("button", { class: "tag-go", type: "button", title: "Ver os temas desta tag", onclick: function () { select("tag", tagKey(g)); } }, g),
+          h("button", { class: "tag-x", type: "button", "aria-label": "Remover a tag " + g, onclick: function () {
+            var y = getTema(id); if (!y) return;
+            y.tags = (y.tags || []).filter(function (k) { return k !== g; });
+            persist("temas", y); renderRail(); paint();
+          } }, "×")));
+      });
+    }
+    function add(raw) {
+      showErr("");
+      var r = addTag(id, raw);
+      if (r === "max") showErr("Cada tema aceita até 8 tags.");
+      else if (r) { inp.value = ""; paint(); }
+    }
+    inp.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === ",") { e.preventDefault(); add(inp.value); }
+    });
+
+    var sug = h("button", { class: "btn ghost small", type: "button", disabled: !sampleFn }, "Sugerir tags");
+    sug.addEventListener("click", function () {
+      var x = getTema(id); if (!x || sug.disabled || !sampleFn) return;
+      sug.disabled = true; sug.textContent = "Sugerindo…"; showErr("");
+      var ja = todasTags().map(function (g) { return g.nome; }).slice(0, 30).join(", ");
+      var prompt = [
+        "Sugira de 3 a 5 tags curtas (1 a 3 palavras, em minúsculas) para classificar um tema de estudo da disciplina Instituições Judiciais e Ética, do 1º período de Direito.",
+        "Tema: " + x.titulo,
+        x.notas && x.notas.trim() ? "Anotações de aula: " + x.notas.trim().slice(0, 1000) : "",
+        ja ? "Tags que o estudante já usa. Reaproveite quando servirem: " + ja : "",
+        'Responda somente com um array JSON de strings, por exemplo ["poder judiciário","organização"].'
+      ].join("\n");
+      sampleFn.json(prompt, { modelTier: "quick", cache: false }).then(function (arr) {
+        var lim = false;
+        (Array.isArray(arr) ? arr : []).slice(0, 6).forEach(function (g) {
+          if (typeof g !== "string") return;
+          if (addTag(id, g) === "max") lim = true;
+        });
+        paint();
+        if (lim) showErr("Cada tema aceita até 8 tags.");
+      }).catch(function (e) { showErr(copyFor(e && e.code)); })
+        .then(function () { sug.disabled = !sampleFn; sug.textContent = "Sugerir tags"; });
+    });
+
+    paint();
+    return h("div", { class: "stack" },
+      h("span", { class: "label", style: "margin:0", text: "Tags" }),
+      chipsBox,
+      h("div", { class: "row" }, inp, dl,
+        h("button", { class: "btn ghost small", type: "button", onclick: function () { add(inp.value); } }, "Adicionar"),
+        sug),
+      erro);
+  }
+
+  /* --- revisões --- */
+  function revHomeView() {
+    var wrap = h("div", { class: "mesa" });
+    if (!state.loaded) {
+      wrap.append(h("section", { class: "panel" }, h("p", { class: "muted", style: "margin:0", text: "Carregando suas revisões…" })));
+      return wrap;
+    }
+    var itens = temasRevisao();
+    if (!itens.length) {
+      wrap.append(h("section", { class: "empty" },
+        h("h3", { text: "Nada para revisar ainda" }),
+        h("p", { text: "As revisões reúnem tudo o que você registra na pauta: anotações de aula, guias de estudo e perguntas. Assim que um tema tiver algum desses itens, ele aparece aqui com a data da próxima revisão." }),
+        h("button", { class: "btn ghost", type: "button", onclick: function () { select(null); } }, "Ir para a mesa de estudo")));
+      return wrap;
+    }
+
+    var hoje = itens.filter(function (t) { return revStatus(t).due; }).length;
+    var refazer = 0, revisados = 0;
+    itens.forEach(function (t) {
+      refazer += (t.perguntas || []).filter(precisaRefazer).length;
+      if (t.ultRev) revisados++;
+    });
+
+    wrap.append(h("section", { class: "panel" },
+      h("h2", { class: "label", text: "Andamento das revisões" }),
+      h("dl", { class: "facts" },
+        h("div", null, h("dt", { text: "Temas em revisão" }), h("dd", { text: String(itens.length) })),
+        h("div", null, h("dt", { text: "Para revisar hoje" }), h("dd", { text: String(hoje) })),
+        h("div", null, h("dt", { text: "Perguntas a refazer" }), h("dd", { text: String(refazer) })),
+        h("div", null, h("dt", { text: "Já revisados" }), h("dd", { text: revisados + "/" + itens.length })))));
+
+    var lista = h("section", { class: "panel" }, h("h2", { class: "label", text: "Fila de revisão" }));
+    itens.forEach(function (t) {
+      var st = revStatus(t), ps = t.perguntas || [];
+      var n = ps.filter(precisaRefazer).length;
+      lista.append(h("div", { class: "rev-row" },
+        h("div", null,
+          h("b", { text: t.titulo }),
+          h("div", { class: "q-meta" },
+            h("span", { class: "pill " + st.cls, text: st.texto }),
+            t.ultRev ? h("span", { class: "pill", text: "última revisão " + dataBR(t.ultRev) }) : null,
+            t.guia ? h("span", { class: "pill", text: "guia" }) : null,
+            t.notas && t.notas.trim() ? h("span", { class: "pill", text: "anotações" }) : null,
+            ps.length ? h("span", { class: "pill " + (n ? "warn" : "good"), text: n ? n + " a refazer" : "perguntas em dia" }) : null)),
+        h("button", { class: "btn small", type: "button", onclick: function () { select("rev", t.id); } }, "Revisar")));
+    });
+    wrap.append(lista);
+    return wrap;
+  }
+
+  function marcarPergunta(temaId, qid, val) {
+    var x = getTema(temaId); if (!x) return;
+    var q = (x.perguntas || []).filter(function (p) { return p.id === qid; })[0];
+    if (!q) return;
+    if (val) { q.autoRev = val; q.revEm = Date.now(); } else { delete q.autoRev; delete q.revEm; }
+    persist("temas", x); renderRail(); renderMain(true);
+  }
+
+  function revView(t) {
+    var id = t.id, key = "resumo:" + id;
+    var root = h("div", { class: "mesa" });
+    var st = revStatus(t);
+
+    root.append(h("section", { class: "panel stack" },
+      h("div", { class: "row between" },
+        h("button", { class: "btn ghost small", type: "button", onclick: function () { select("revhome"); } }, "Voltar às revisões"),
+        h("button", { class: "btn ghost small", type: "button", onclick: function () { select("tema", id); } }, "Abrir tema")),
+      h("h2", { style: "font-family:var(--f-display);font-size:clamp(20px,3.6vw,26px);margin:0;overflow-wrap:anywhere", text: t.titulo }),
+      h("div", { class: "q-meta" },
+        h("span", { class: "pill " + st.cls, text: st.texto }),
+        t.ultRev ? h("span", { class: "pill", text: "última revisão " + dataBR(t.ultRev) }) : null)));
+
+    /* resumo */
+    var running = !!jobs[key];
+    var resumo = h("section", { class: "panel stack" }, h("h2", { class: "label", text: "Resumo de revisão" }));
+    if (!sampleFn) resumo.append(h("div", { class: "note", text: NO_CLAUDE }));
+    if (running || jobErr[key]) resumo.append(jobBox(key, "Montando o resumo…", "Parar"));
+    if (!running) {
+      if (t.resumo) {
+        var rn = h("div", { class: "prose" }); renderMd(t.resumo, rn); resumo.append(rn);
+        if (t.resumoCortado) resumo.append(h("div", { class: "note", text: "O resumo foi interrompido antes do fim. Gere de novo para obter a versão completa." }));
+      } else {
+        resumo.append(h("p", { class: "muted", style: "margin:0", text: "Uma página para reler em poucos minutos, feita a partir do seu guia, das suas anotações e das perguntas em que você foi mal." }));
+      }
+      resumo.append(h("div", { class: "row" },
+        h("button", { class: "btn", type: "button", disabled: !sampleFn, onclick: function () { gerarResumo(id); } }, t.resumo ? "Gerar resumo de novo" : "Gerar resumo de revisão")));
+    }
+    root.append(resumo);
+
+    /* material já registrado */
+    var mat = h("section", { class: "panel stack" }, h("h2", { class: "label", text: "O que você já registrou" }));
+    if (t.notas && t.notas.trim()) mat.append(h("div", { class: "stack" }, h("b", { text: "Anotações de aula" }), h("p", { class: "quote", text: t.notas })));
+    else mat.append(h("p", { class: "muted", style: "margin:0", text: "Sem anotações de aula neste tema." }));
+    if (t.guia) {
+      var gn = h("div", { class: "prose" }); renderMd(t.guia, gn);
+      mat.append(h("details", { class: "fold" }, h("summary", { text: "Guia de estudo" }), gn));
+    } else {
+      mat.append(h("p", { class: "muted", style: "margin:0", text: "Este tema ainda não tem guia de estudo." }));
+    }
+    root.append(mat);
+
+    /* materiais de estudo ligados ao tema */
+    var rel = state.materiais.filter(function (m) { return m.temaId === id; });
+    if (rel.length) {
+      var ms = h("section", { class: "panel stack" }, h("h2", { class: "label", text: "Materiais de estudo deste tema" }));
+      rel.forEach(function (m) {
+        ms.append(h("div", { class: "rev-row" },
+          h("div", null,
+            h("a", { class: "mat-link", href: m.url, target: "_blank", rel: "noopener noreferrer" }, m.titulo),
+            h("div", { class: "q-meta" }, h("span", { class: "host", text: hostOf(m.url) }))),
+          h("a", { class: "btn small", href: m.url, target: "_blank", rel: "noopener noreferrer" }, "Abrir")));
+      });
+      root.append(ms);
+    }
+
+    /* perguntas */
+    var ps = t.perguntas || [];
+    var pend = ps.filter(precisaRefazer), ok = ps.length - pend.length;
+    var perg = h("section", { class: "panel stack" }, h("h2", { class: "label", text: "Perguntas para refazer" }));
+    if (!ps.length) {
+      perg.append(h("p", { class: "muted", style: "margin:0", text: "Ainda não há perguntas neste tema. Gere as perguntas na aba Perguntas do tema para treinar aqui." }));
+    } else {
+      perg.append(h("div", { class: "row between" },
+        h("span", { class: "muted", text: pend.length ? pend.length + " para refazer · " + ok + " em dia" : "Todas as perguntas estão em dia." }),
+        ps.some(function (q) { return q.autoRev; }) ? h("button", { class: "btn ghost small", type: "button", onclick: function () {
+          var x = getTema(id); if (!x) return;
+          (x.perguntas || []).forEach(function (q) { delete q.autoRev; delete q.revEm; });
+          persist("temas", x); renderRail(); renderMain(true);
+        } }, "Zerar marcações") : null));
+      pend.forEach(function (q) {
+        var shown = !!revShown[q.id];
+        perg.append(h("article", { class: "q" },
+          h("div", { class: "q-meta" },
+            h("span", { class: "pill", text: q.tipo }),
+            q.nota != null ? h("span", { class: "pill " + (q.nota >= 7 ? "good" : q.nota >= 5 ? "warn" : "bad"), text: "nota anterior " + fmtNota(q.nota) }) : h("span", { class: "pill", text: "ainda não corrigida" }),
+            q.autoRev === "errei" ? h("span", { class: "pill bad", text: "marcada como erro" }) : null),
+          h("p", { class: "q-text", text: q.pergunta }),
+          q.resposta && q.resposta.trim() ? h("div", { class: "fb" }, h("span", { class: "label", style: "margin:0", text: "Sua resposta anterior" }), h("p", { text: q.resposta })) : null,
+          !shown
+            ? h("div", { class: "row" }, h("button", { class: "btn ghost small", type: "button", onclick: function () { revShown[q.id] = true; renderMain(true); } }, "Mostrar gabarito"))
+            : h("div", { class: "stack" },
+                h("div", { class: "fb" }, h("span", { class: "label", style: "margin:0", text: "Gabarito" }), h("p", { text: q.gabarito })),
+                h("div", { class: "row" },
+                  h("span", { class: "muted", text: "Você acertou?" }),
+                  h("button", { class: "btn small", type: "button", onclick: function () { delete revShown[q.id]; marcarPergunta(id, q.id, "acertei"); } }, "Acertei"),
+                  h("button", { class: "btn ghost small", type: "button", onclick: function () { delete revShown[q.id]; marcarPergunta(id, q.id, "errei"); } }, "Errei")))));
+      });
+    }
+    root.append(perg);
+
+    /* concluir */
+    var fim = h("section", { class: "panel stack" }, h("h2", { class: "label", text: "Concluir esta revisão" }),
+      h("p", { class: "muted", style: "margin:0", text: "Escolha quando o tema volta para a fila. Temas que você domina podem esperar mais." }));
+    fim.append(h("div", { class: "row" }, [[1, "em 1 dia"], [3, "em 3 dias"], [7, "em 7 dias"], [14, "em 14 dias"]].map(function (o) {
+      return h("button", { class: o[0] === 3 ? "btn" : "btn ghost", type: "button", onclick: function () {
+        var x = getTema(id); if (!x) return;
+        x.ultRev = hojeStr(); x.proxRevisao = addDias(o[0]);
+        x.revisoes = (x.revisoes || []).concat(Date.now()).slice(-20);
+        persist("temas", x);
+        select("revhome");
+      } }, "Revisei, voltar " + o[1]);
+    })));
+    root.append(fim);
+    return root;
+  }
+
+  /* --- trabalho --- */
+  function trabView(w) {
+    var id = w.id, key = "orient:" + id;
+    var root = h("div", { class: "mesa" });
+
+    function upd(fn) { return function () { var x = getTrab(id); if (x) { fn(x); persist("trabalhos", x); renderRail(); } }; }
+
+    var titulo = h("input", { class: "title-input", id: "trab-titulo", type: "text", value: w.titulo, "aria-label": "Título do trabalho",
+      oninput: function () { debounced("wt:" + id, upd(function (x) { x.titulo = titulo.value.trim() || "Trabalho sem título"; })); } });
+    var del = h("button", { class: "btn ghost small danger", type: "button" }, "Excluir");
+    armDelete(del, function () { removeItem("trabalhos", id); state.sel = null; renderRail(); renderMain(true); });
+
+    var prazo = h("input", { id: "trab-prazo", type: "date", value: w.prazo || "",
+      onchange: upd(function (x) { x.prazo = prazo.value; }) });
+    var status = h("select", { id: "trab-status", onchange: upd(function (x) { x.status = status.value; }) },
+      [["a-fazer", "A fazer"], ["andamento", "Em andamento"], ["entregue", "Entregue"]].map(function (o) {
+        var op = h("option", { value: o[0], text: o[1] }); if ((w.status || "a-fazer") === o[0]) op.selected = true; return op;
+      }));
+    var d = daysLeft(w.prazo);
+
+    root.append(h("section", { class: "panel mesa-head" },
+      titulo,
+      h("div", { class: "row", style: "align-items:flex-end" },
+        h("label", { class: "field", for: "trab-prazo", style: "min-width:170px" }, "Prazo de entrega", prazo),
+        h("label", { class: "field", for: "trab-status", style: "min-width:170px" }, "Situação", status),
+        w.prazo && w.status !== "entregue" ? h("span", { class: "pill " + (d < 0 ? "bad" : d <= 3 ? "warn" : "accent"), text: prazoTexto(d) }) : null),
+      h("div", { class: "row between" }, h("span"), del)));
+
+    var enun = h("textarea", { id: "trab-enunciado", rows: "8", value: w.enunciado || "",
+      placeholder: "Cole aqui o que o professor pediu: tema, número de páginas, formato, critérios de avaliação, bibliografia indicada…",
+      oninput: function () { debounced("we:" + id, upd(function (x) { x.enunciado = enun.value; })); } });
+
+    var orient = h("div", { class: "stack" });
+    var running = !!jobs[key];
+    if (running || jobErr[key]) orient.append(jobBox(key, "Preparando a orientação…", "Parar"));
+    if (!running && w.orientacao) {
+      var node = h("div", { class: "prose" }); renderMd(w.orientacao, node); orient.append(node);
+      if (w.orientacaoCortada) orient.append(h("div", { class: "note", text: "A orientação foi interrompida antes do fim. Gere de novo para obter a versão completa." }));
+    }
+
+    root.append(h("section", { class: "panel stack" },
+      h("label", { class: "field", for: "trab-enunciado" }, "Orientação do professor", enun),
+      !sampleFn ? h("div", { class: "note", text: NO_CLAUDE }) : null,
+      h("div", { class: "row" },
+        h("button", { class: "btn", type: "button", disabled: !sampleFn || running, onclick: function () { gerarOrientacao(id); } }, w.orientacao ? "Gerar orientação de novo" : "Gerar orientação"),
+        h("span", { class: "muted", text: "O monitor orienta o caminho e o cronograma. O texto do trabalho é seu." })),
+      orient));
+    return root;
+  }
+
+  /* ---------- eventos fixos ---------- */
+  $("#home-link").addEventListener("click", function () { select(null); });
+  $("#rev-link").addEventListener("click", function () { select("revhome"); });
+  $("#fab-monitor").addEventListener("click", function () {
+    var b = $("#monitor"); if (!b) return;
+    b.scrollIntoView({ block: "end" });
+    var i = $("#monitor-input"); if (i && !i.disabled) i.focus({ preventScroll: true });
+  });
+  $("#mat-link").addEventListener("click", function () { state.matEdit = null; select("mat"); });
+  $("#mat-add").addEventListener("click", function () {
+    state.matEdit = null; select("mat");
+    var u = $("#mat-url"); if (u) u.focus();
+  });
+  $("#novo-trabalho").addEventListener("click", addTrabalho);
+  $("#form-temas").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var ta = $("#novos-temas");
+    var n = addTemas(ta.value.split("\n"));
+    if (n) { ta.value = ""; select("tema", state.temas[state.temas.length - 1].id); }
+  });
+  window.addEventListener("pagehide", flushAll);
+
+  /* ---------- inicialização ---------- */
+  function ordenar(a, b) { return (a.criadoEm || 0) - (b.criadoEm || 0); }
+
+  function subscribe() {
+    var timer = setTimeout(function () {
+      if (!state.synced) { state.slow = true; state.loaded = true; renderStatus(); renderRail(); renderMain(false); }
+    }, 10000);
+    var got = { temas: false, trabalhos: false, materiais: false };
+    function ok(col) {
+      return function (snap) {
+        var list = snap.docs.map(function (d) { var o = JSON.parse(JSON.stringify(d.data() || {})); o.id = d.id; return o; }).sort(ordenar);
+        if (col === "temas") state.temas = list; else if (col === "materiais") state.materiais = list; else state.trabalhos = list;
+        got[col] = true;
+        if (got.temas && got.trabalhos && got.materiais) { state.synced = true; state.loaded = true; state.slow = false; clearTimeout(timer); }
+        renderStatus(); renderRail(); renderMain(false);
+      };
+    }
+    function fail() { clearTimeout(timer); state.loaded = true; state.saveError = true; renderStatus(); }
+    dbNS.collection("temas").onSnapshot(ok("temas"), fail);
+    dbNS.collection("trabalhos").onSnapshot(ok("trabalhos"), fail);
+    dbNS.collection("materiais").onSnapshot(ok("materiais"), fail);
+    dbNS.collection("conversas").doc("geral").onSnapshot(function (snap) {
+      var d = snap.exists ? snap.data() : null;
+      state.geral = { id: "geral", chat: d && Array.isArray(d.chat) ? JSON.parse(JSON.stringify(d.chat)) : [] };
+      renderMain(false);
+    }, function () {});
+    ["temas", "trabalhos", "materiais"].forEach(function (col) {
+      dbNS.collection(col).get().then(function (snap) { if (!got[col]) ok(col)(snap); }).catch(function () {});
+    });
+  }
+
+  function use(name) {
+    try { return window.claude && window.claude.use ? window.claude.use(name) : Promise.resolve(null); }
+    catch (e) { return Promise.resolve(null); }
+  }
+
+  renderStatus(); renderRail(); renderMain(true);
+
+  Promise.all([use("db").catch(function () { return null; }), use("sample").catch(function () { return null; })]).then(function (r) {
+    dbNS = r[0]; sampleFn = r[1];
+    if (dbNS) { state.mode = "db"; renderStatus(); subscribe(); }
+    else { state.mode = "local"; localLoad(); state.loaded = true; renderStatus(); }
+    renderRail(); renderMain(false);
+  });
+})();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("sw.js").catch(function () {});
+  });
+}
+</script>
+</body></html>
